@@ -23,7 +23,7 @@ class TrainRequest:
 
         self.criterion = criterion()
         self.optimizer = optimizer(model.parameters())
-        self.scheduler = scheduler(self.optimizer, step_size=2, gamma=0.5)
+        self.scheduler = scheduler(self.optimizer, step_size=3, gamma=0.7)
 
 
 def basic_train(train_request: TrainRequest, da_datasets: DADataloader):
@@ -51,6 +51,6 @@ def basic_train(train_request: TrainRequest, da_datasets: DADataloader):
         target_accuracy = test_model_acc(train_request.model, da_datasets.target_val_loader)
         print(f'Target accuracy: {target_accuracy}')
 
-        if accuracy > 95:
+        if accuracy > 90:
             print('Stop train, accuracy > 95%')
             return

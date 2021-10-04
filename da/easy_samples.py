@@ -43,11 +43,11 @@ def get_transport_results(model, Xs, Xt, ys, yt, ys_test):
     print('yt', len(Xt))
 
     transports = {'EMD': ot.da.EMDTransport(),
-                  'Sinkhorn': ot.da.SinkhornTransport(reg_e=4, verbose=False),
-                  'SinkhornLpl1': ot.da.SinkhornLpl1Transport(reg_e=4, reg_cl=0.1, verbose=False),
-                  'SinkhornL1l2': ot.da.SinkhornL1l2Transport(reg_e=4, reg_cl=0.1, verbose=False),
-                  #'MapOT': ot.da.MappingTransport(kernel="linear", mu=1, eta=1e-0, bias=True, max_iter=20,
-                  #                                verbose=False)
+                  'Sinkhorn': ot.da.SinkhornTransport(reg_e=2, verbose=False),
+                  'SinkhornLpl1': ot.da.SinkhornLpl1Transport(reg_e=2, reg_cl=0.1, verbose=False),
+                  'SinkhornL1l2': ot.da.SinkhornL1l2Transport(reg_e=2, reg_cl=0.1, verbose=False),
+                  'MapOT': ot.da.MappingTransport(kernel="linear", mu=1, eta=1e-0, bias=True, max_iter=20,
+                                                  verbose=False)
                  }
 
     accs = []

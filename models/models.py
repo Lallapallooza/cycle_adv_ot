@@ -4,13 +4,19 @@ from torchvision import models
 from models.layers import Identity
 
 
-class ResNet18(nn.Module):
-    def __init__(self, n_classes):
+class ResNet(nn.Module):
+    def __init__(self, backbone, n_classes, emb_size, freeze_backbone=True):
         super().__init__()
-        self.backbone = models.resnet18(True)
+        self.backbone = backbone
+        self.emb_size = emb_size
+
+        if freeze_backbone:
+            for param in self.backbone.parameters():
+                param.requires_grad = False
+
         self.backbone.fc = Identity()
         self.classifier = nn.Sequential(
-            nn.Linear(512, n_classes)
+            nn.Linear(emb_size, n_classes)
         )
 
     def forward_seq(self, x):
@@ -23,5 +29,8 @@ class ResNet18(nn.Module):
         return logits
 
 
-def resnet18(n_classes: int) -> ResNet18:
-    return ResNet18(n_classes)
+def resnet18(n_classes: int, freeze_backbone=True) -> ResNet:
+    return ResNet(models.resnet18(True), n_classes, 512, freeze_backbone)
+
+def resnet50(n_classes: int, freeze_backbone=True) -> ResNet:
+    return ResNet(models.resnet50(True), n_classes, 2048, freeze_backbone)

@@ -3,7 +3,6 @@ import itertools
 import numpy as np
 from torch.utils.data import DataLoader, TensorDataset
 from train.train import TrainRequest, DADataloader, basic_train
-from models.models import resnet18
 from da.easy_samples import create_latent_dataloader, \
     get_data_subset, \
     H_collector, \
@@ -28,16 +27,15 @@ def print_stats(stats):
         print('mean:', np.around(np.mean(stats[:, i]), 3), ', std:', np.around(np.std(stats[:, i]), 3))
 
 
-def basic_experiment(datasets: DADatasets, epsilon=0.45, m_steps=50, shuffle=True, optimizer=optim.Adam):
-    source_train_loader = DataLoader(datasets.source_train, batch_size=128, num_workers=30, shuffle=shuffle)
-    source_val_loader = DataLoader(datasets.source_val, batch_size=128, num_workers=30, shuffle=shuffle)
+def basic_experiment(model, datasets: DADatasets, epsilon=0.45, m_steps=50, shuffle=True, optimizer=optim.Adam, bsize=32, n_workers=30):
+    source_train_loader = DataLoader(datasets.source_train, batch_size=bsize, num_workers=n_workers, shuffle=shuffle)
+    source_val_loader = DataLoader(datasets.source_val, batch_size=bsize, num_workers=n_workers, shuffle=shuffle)
 
-    target_train_loader = DataLoader(datasets.target_train, batch_size=128, shuffle=shuffle)
-    target_val_loader = DataLoader(datasets.target_val, batch_size=128, shuffle=shuffle)
+    target_train_loader = DataLoader(datasets.target_train, batch_size=bsize, shuffle=shuffle)
+    target_val_loader = DataLoader(datasets.target_val, batch_size=bsize, shuffle=shuffle)
 
-    model = resnet18(datasets.n_classes)
 
-    train_request = TrainRequest(model, 10, optimizer=optimizer)
+    train_request = TrainRequest(model, 25, optimizer=optimizer)
     da_dataloaders = DADataloader(source_train_loader, source_val_loader, target_val_loader)
 
     basic_train(train_request, da_dataloaders)
@@ -69,7 +67,7 @@ def basic_experiment(datasets: DADatasets, epsilon=0.45, m_steps=50, shuffle=Tru
     # Get easy domain and insert into dataloader
     _, easy_samples, _ = H_collector(model.classifier,
                                      target_subset_leader,
-                                     isize=[512, 1, 1],
+                                     isize=[model.emb_size, 1, 1],
                                      conv=False, m_steps=m_steps,
                                      epsilon=epsilon)
 

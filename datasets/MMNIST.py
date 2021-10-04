@@ -9,13 +9,13 @@ from torchvision import transforms, datasets
 
 
 class MMNIST(Dataset):
-    def __init__(self, path, bsd500_path, custom_transforms, train=True):
+    def __init__(self, path, bsd500_path, custom_transforms_mnist, custom_transforms_bsd, train=True):
         super(MMNIST, self).__init__()
-        self.mnist = datasets.MNIST(Path(path), train=train, transform=custom_transforms, download=True)
+        self.mnist = datasets.MNIST(Path(path), train=train, transform=custom_transforms_mnist, download=True)
         self.bsds = BSDS500(bsd500_path)
         self.rng = np.random.RandomState(42)
 
-        self.transforms = custom_transforms
+        self.transforms = custom_transforms_bsd
 
     def __getitem__(self, i):
         digit, label = self.mnist[i]
